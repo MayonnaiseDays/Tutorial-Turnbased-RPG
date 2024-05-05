@@ -54,14 +54,33 @@ function BattleStateSelectAction()
 	var _unit = unitTurnOrder[turn];
 	
 	//is the uinit dead or unable to act?
-	if (!instance_exists(_unit) || (_unit.hp <= 0))
+	if (!instance_exists(_unit)) || (_unit.hp <= 0)
 	{
 		battleState = BattleStateVictoryCheck;
 		exit;
 	}
 	
 	//select action to perform
-	BeginAction(_unit.id, global.actionLibrary.attack, _unit.id);
+	
+	//if unit ios player controlled
+	if (_unit.object_index == oBattleUnitPC)
+	{
+		var _action = global.actionLibrary.attack;
+		var _possibleTargets = array_filter(oBattle.enemyUnits, function(_unit, _index)
+		{
+			return (_unit.hp > 0);
+		});
+		var _target = _possibleTargets[irandom(array_length(_possibleTargets) - 1)];
+		BeginAction(_unit.id, _action, _target);
+	}
+	else
+	{
+		//if unit ios ai
+		var _enemyAction = _unit.AIscript();
+		if (_enemyAction != -1)
+			BeginAction(_unit.id, _enemyAction[0], _enemyAction[1]);
+	}
+	
 }
 
 function BeginAction(_user, _action, _targets)
@@ -118,15 +137,17 @@ function BattleStatePerformAction()
 				}
 			}
 			currentAction.func(currentUser, currentTargets);
+			show_debug_message("i should have punched!");
 		}
 	}
 	else // wait for delayu then end turn
 	{
-		if (instance_exists(oBattleEffect))
+		if (!instance_exists(oBattleEffect))
 		{
 			battleWaitTimeRemaining--;
 			if (battleWaitTimeRemaining == 0)
 			{
+				show_debug_message("going to next state now");
 				battleState = BattleStateVictoryCheck;
 			}
 		}
@@ -152,4 +173,4 @@ function BattleStateTurnProgression()
 }
 
 
-battlestate = BattleStateSelectAction;
+battleState = BattleStateSelectAction;
