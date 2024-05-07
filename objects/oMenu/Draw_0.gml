@@ -7,7 +7,7 @@ draw_set_font(fnM5x7);
 draw_set_halign(fa_left)
 draw_set_valign(fa_top);
 
-var _desc = (description != 1);
+var _desc = (description != -1);
 var _scrollPush = max(0, hover - (visibleOptionsMax - 1));
 
 for(var i = 0;i < array_length(options); i++)

@@ -50,37 +50,74 @@ RefreshRenderOrder();
 
 function BattleStateSelectAction()
 {
-	// get current unit
-	var _unit = unitTurnOrder[turn];
-	
-	//is the uinit dead or unable to act?
-	if (!instance_exists(_unit)) || (_unit.hp <= 0)
+	if (!instance_exists(oMenu))
 	{
-		battleState = BattleStateVictoryCheck;
-		exit;
-	}
+		// get current unit
+		var _unit = unitTurnOrder[turn];
 	
-	//select action to perform
-	
-	//if unit ios player controlled
-	if (_unit.object_index == oBattleUnitPC)
-	{
-		var _action = global.actionLibrary.attack;
-		var _possibleTargets = array_filter(oBattle.enemyUnits, function(_unit, _index)
+		//is the uinit dead or unable to act?
+		if (!instance_exists(_unit)) || (_unit.hp <= 0)
 		{
-			return (_unit.hp > 0);
-		});
-		var _target = _possibleTargets[irandom(array_length(_possibleTargets) - 1)];
-		BeginAction(_unit.id, _action, _target);
-	}
-	else
-	{
-		//if unit ios ai
-		var _enemyAction = _unit.AIscript();
-		if (_enemyAction != -1)
-			BeginAction(_unit.id, _enemyAction[0], _enemyAction[1]);
-	}
+			battleState = BattleStateVictoryCheck;
+			exit;
+		}
 	
+		//select action to perform
+	
+		//if unit ios player controlled
+		if (_unit.object_index == oBattleUnitPC)
+		{
+			//compile the aciton menu
+			var _menuOptions = [];
+			var _subMenus = {};
+			
+			var _actionList = _unit.actions;
+			
+			for (var i = 0; i < array_length(_actionList); i++)
+			{
+				var _action = _actionList[i];
+				var _available = true; // this will be mp check
+				var _nameAndCount = _action.name; // for items
+				if (_action.subMenu == -1)
+				{
+					array_push(_menuOptions, [_nameAndCount, MenuSelectAction, [_unit, _action], _available]);
+				}
+				else
+				{
+					//create or add to submenu
+					if (is_undefined(_subMenus[$ _action.subMenu]))
+					{
+						variable_struct_set(_subMenus, _action.subMenu, [[_nameAndCount, MenuSelectAction, [_unit, _action], _available]]);
+					}
+					else
+					{
+						array_push(_subMenus[$ _action.subMenu], [_nameAndCount, MenuSelectAction, [_unit, _action], _available]);
+					}
+				}
+				//turn sub menus in to an array
+				var _subMenusArray = variable_struct_get_names(_subMenus);
+				for (var i = 0; i < array_length(_subMenusArray); i++)
+				{
+					//sort submenu if needed
+					//(here)
+				
+					//add back option at end of each submenu
+					array_push(_subMenus[$ _subMenusArray[i]], ["Back", MenuGoBack, -1, true]);
+					//addsubmenu into main menu
+					array_push(_menuOptions, [_subMenusArray[i], SubMenu, [_subMenus[$ _subMenusArray[i]]], true]);
+				}
+			}
+			
+			Menu(x + 10, y + 110, _menuOptions, , 74, 60);
+		}
+		else
+		{
+			//if unit ios ai
+			var _enemyAction = _unit.AIscript();
+			if (_enemyAction != -1)
+				BeginAction(_unit.id, _enemyAction[0], _enemyAction[1]);
+		}
+	}
 }
 
 function BeginAction(_user, _action, _targets)
