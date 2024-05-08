@@ -94,19 +94,21 @@ function BattleStateSelectAction()
 						array_push(_subMenus[$ _action.subMenu], [_nameAndCount, MenuSelectAction, [_unit, _action], _available]);
 					}
 				}
-				//turn sub menus in to an array
-				var _subMenusArray = variable_struct_get_names(_subMenus);
-				for (var i = 0; i < array_length(_subMenusArray); i++)
-				{
-					//sort submenu if needed
-					//(here)
-				
-					//add back option at end of each submenu
-					array_push(_subMenus[$ _subMenusArray[i]], ["Back", MenuGoBack, -1, true]);
-					//addsubmenu into main menu
-					array_push(_menuOptions, [_subMenusArray[i], SubMenu, [_subMenus[$ _subMenusArray[i]]], true]);
-				}
 			}
+			
+			//turn sub menus in to an array
+			var _subMenusArray = variable_struct_get_names(_subMenus);
+			for (var i = 0; i < array_length(_subMenusArray); i++)
+			{
+				//sort submenu if needed
+				//(here)
+			
+				//add back option at end of each submenu
+				array_push(_subMenus[$ _subMenusArray[i]], ["Back", MenuGoBack, -1, true]);
+				//addsubmenu into main menu
+				array_push(_menuOptions, [_subMenusArray[i], SubMenu, [_subMenus[$ _subMenusArray[i]]], true]);
+			}
+			
 			
 			Menu(x + 10, y + 110, _menuOptions, , 74, 60);
 		}
