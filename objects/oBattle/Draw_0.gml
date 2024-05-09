@@ -85,3 +85,27 @@ for (var i = 0; i < array_length(partyUnits); i++)
 	
 	draw_set_color(c_white);
 }
+
+//darw cursor
+if (cursor.active)
+{
+	with (cursor)
+	{
+		if (activeTarget != noone)
+		{
+			if (!is_array(activeTarget))
+			{
+				draw_sprite(sPointer, 0, activeTarget.x, activeTarget.y);
+			}
+			else
+			{
+				draw_set_alpha(sin(get_timer()/ 50000) + 1);//make cursor flash
+				for (var i = 0; i < array_length(activeTarget); i++)
+				{
+					draw_sprite(sPointer, 0, activeTarget[i].x, activeTarget[i].y);
+				}
+				draw_set_alpha(1.0);//reset alpha
+			}
+		}
+	}
+}

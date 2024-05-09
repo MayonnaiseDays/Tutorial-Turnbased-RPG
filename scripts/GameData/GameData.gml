@@ -26,7 +26,7 @@ global.actionLibrary =
 		mpCost : 4,
 		targetRequired : true,
 		targetEnemyByDefault : true,
-		targetAll : MODE.NEVER,
+		targetAll : MODE.VARIES,
 		userAnimation : "cast",
 		effectSprite : sAttackIce,
 		effectOnTarget : MODE.ALWAYS,

@@ -72,7 +72,44 @@ function MenuSelectAction(_user, _action)
 	with (oMenu)
 		active = false;
 	with (oBattle)
-		BeginAction(_user, _action, _user);
-	with (oMenu)
-		instance_destroy();
+	{
+		if (_action.targetRequired)
+		{
+			with (cursor)
+			{
+				active = true;
+				activeAction = _action;
+				targetAll = _action.targetAll;
+				if (targetAll == MODE.VARIES)
+					targetAll = true;
+				activeUser = _user;
+				
+				//which side to target by default?
+				if (_action.targetEnemyByDefault)
+				{
+					targetIndex = 0;
+					targetSide = oBattle.enemyUnits;
+					activeTarget = oBattle.enemyUnits[targetIndex];
+				}
+				else
+				{
+					targetSide = oBattle.partyUnits;
+					activeTarget = activeUser;
+					var _findSelf = function(_element)
+					{
+						return (_element == activeTarget);
+					}
+					targetIndex = array_find_index(oBattle.partyUnits, _findSelf);
+				}
+			}
+		}
+		else
+		{
+			//if no target needed, begin action and end menu
+			BeginAction(_user, _action, -1);
+			with (oMenu)
+				instance_destroy();
+			
+		}
+	}
 }
