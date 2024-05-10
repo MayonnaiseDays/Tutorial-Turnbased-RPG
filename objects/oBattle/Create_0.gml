@@ -12,6 +12,7 @@ turnCount = 0;
 roundCount = 0;
 battleWaitTimeFrames = 30;
 battleWaitTimeRemaining = 0;
+battleText = "";
 currentUser = noone;
 currentAction = -1;
 currentTargets = noone;
@@ -140,6 +141,7 @@ function BeginAction(_user, _action, _targets)
 		currentUser = _user;
 		currentAction = _action;
 		currentTargets = _targets;
+		battleText = string_ext(_action.description, [_user.name]);
 		if (!is_array(currentTargets))
 			currentTargets = [currentTargets];
 		battleWaitTimeRemaining = battleWaitTimeFrames;
@@ -213,6 +215,8 @@ function BattleStateVictoryCheck()
 
 function BattleStateTurnProgression()
 {
+	battleText = "";// reset battle text
+	//make sure there is enpough dealy to read the messages
 	turnCount++;
 	turn++;
 	//loopturns
